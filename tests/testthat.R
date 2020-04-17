@@ -1,4 +1,4 @@
 library(testthat)
-library(mlr3learnertemplate)
+library(mlr3learners.flexsurv)
 
-test_check("mlr3learnertemplate")
+test_check("mlr3learners.flexsurv")

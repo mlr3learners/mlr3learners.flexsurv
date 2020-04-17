@@ -1,5 +1,5 @@
-# mlr3learnerstemplate 0.1.0.9000
+# mlr3learners.flexsurv 0.1.0
 
-- Internal changes only.
+- Initial release.
 
 
