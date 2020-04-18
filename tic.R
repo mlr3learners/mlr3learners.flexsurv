@@ -4,7 +4,7 @@ if (!ci_has_env("PARAMTEST")) {
 
   # comment this line in once the learner has been approved
   # this deploys to mlr3learners.drat
-  # do_drat("mlr3learners/mlr3learners.drat")
+  do_drat("mlr3learners/mlr3learners.drat")
 } else {
   # PARAMTEST
   get_stage("install") %>%
