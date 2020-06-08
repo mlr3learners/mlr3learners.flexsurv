@@ -1,6 +1,6 @@
 Package: mlr3learners.flexsurv
 Title: Learners from the {flexsurv} package for 'mlr3'
-Version: 0.1.0.9000
+Version: 0.1.1
 Authors@R:
     person(given = "Raphael",
            family = "Sonabend",
