@@ -117,7 +117,7 @@ LearnerSurvFlexible = R6Class("LearnerSurvFlexible",
       pred = mlr3misc::invoke(predict_flexsurvreg, self$model, task)
 
       # crank is defined as the mean of the survival distribution
-      PredictionSurv$new(task = task, distr = pred$distr, lp = pred$lp, crank = pred$lp)
+      mlr3proba::PredictionSurv$new(task = task, distr = pred$distr, lp = pred$lp, crank = pred$lp)
     }
   )
 )
