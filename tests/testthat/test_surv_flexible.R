@@ -1,6 +1,6 @@
 context("surv.flexible")
 
-task = tsk("rats")
+
 test_that("autotest", {
   set.seed(200)
   learner = lrn("surv.flexible", k = 0, scale = "normal", inits = c(1, 1, 1))
@@ -8,10 +8,11 @@ test_that("autotest", {
   # there's no reason why sanity in particular is excluded except that because of multiple
   # experiments and changing seeds, I've found it isn't possible to remove the "`vnmin` is
   # not finite" error
-  result = run_autotest(learner, exclude = "sanity")
+  result = run_autotest(learner, exclude = "sanity", check_replicable = FALSE)
   expect_true(result, info = result$error)
 })
 
+task = tsk("rats")
 test_that("manualtest", {
   set.seed(15)
   learn = lrn("surv.flexible")

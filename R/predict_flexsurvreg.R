@@ -38,26 +38,23 @@ predict_flexsurvreg <- function(object, task, ...) {
   # Define the d/p/q/r methods using the d/p/q/r methods that are automatically generated in the
   # fitted object. The parameters referenced are defined below and are based on the gamma
   # parameters above.
-  pdf = function(x1) {
-  }
+  pdf = function(x) {} # nolint
   body(pdf) = substitute({
     fn = func
     args = as.list(subset(as.data.table(self$parameters()), select = "value"))$value
     names(args) = unname(unlist(as.data.table(self$parameters())[, 1]))
-    do.call(fn, c(list(x = x1), args))
+    do.call(fn, c(list(x = x), args))
   }, list(func = object$dfns$d))
 
-  cdf = function(x1) {
-  }
+  cdf = function(x) {} # nolint
   body(cdf) = substitute({
     fn = func
     args = as.list(subset(as.data.table(self$parameters()), select = "value"))$value
     names(args) = unname(unlist(as.data.table(self$parameters())[, 1]))
-    do.call(fn, c(list(q = x1), args))
+    do.call(fn, c(list(q = x), args))
   }, list(func = object$dfns$p))
 
-  quantile = function(p) {
-  }
+  quantile = function(p) {} # nolint
   body(quantile) = substitute({
     fn = func
     args = as.list(subset(as.data.table(self$parameters()), select = "value"))$value
@@ -65,8 +62,7 @@ predict_flexsurvreg <- function(object, task, ...) {
     do.call(fn, c(list(p = p), args))
   }, list(func = object$dfns$q))
 
-  rand = function(n) {
-  }
+  rand = function(n) {} # nolint
   body(rand) = substitute({
     fn = func
     args = as.list(subset(as.data.table(self$parameters()), select = "value"))$value
@@ -94,18 +90,6 @@ predict_flexsurvreg <- function(object, task, ...) {
   pargs = data.table::data.table(matrix(args, ncol = ncol(pars), nrow = length(args)))
   pars = rbind(pars, pargs)
 
-  params = lapply(pars, function(x) {
-    x = as.list(x)
-    names(x) = c(object$dlist$pars, names(args))
-    yparams = parameters$clone(deep = TRUE)
-    ind = match(yparams$.__enclos_env__$private$.parameters$id, names(x))
-    yparams$.__enclos_env__$private$.parameters$value = x[ind]
-
-    yparams
-  })
-
-  params = lapply(params, function(x) list(parameters = x))
-
   shared_params = list(
     name = "Flexible Parameteric",
     short_name = "Flexsurv",
@@ -115,13 +99,21 @@ predict_flexsurvreg <- function(object, task, ...) {
     variateForm = "univariate",
     description = "Royston/Parmar Flexible Parametric Survival Model",
     .suppressChecks = TRUE,
-    suppressMoments = TRUE,
     pdf = pdf, cdf = cdf, quantile = quantile, rand = rand
   )
 
-  distr = distr6::VectorDistribution$new(
-    distribution = "Distribution", params = params,
-    shared_params = shared_params, decorators = c("CoreStatistics", "ExoticStatistics"))
+  distlist = lapply(pars, function(x) {
+    x = as.list(x)
+    names(x) = c(object$dlist$pars, names(args))
+    yparams = parameters$clone(deep = TRUE)
+    ind = match(yparams$.__enclos_env__$private$.parameters$id, names(x))
+    yparams$.__enclos_env__$private$.parameters$value = x[ind]
+
+    do.call(distr6::Distribution$new, c(list(parameters = yparams), shared_params))
+  })
+
+  distr = distr6::VectorDistribution$new(distlist,
+                                         decorators = c("CoreStatistics", "ExoticStatistics"))
 
   return(list(distr = distr, lp = lp))
 }
